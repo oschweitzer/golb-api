@@ -1,0 +1,60 @@
+type Query {
+    info: String
+    article(id: Int!): Article
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    articles: [Article]!
+    comments: [Comment]!
+}
+
+type Article {
+    id: ID!
+    title: String!
+    content: String
+    author: User
+    comments: [Comment!]
+    votes: [Vote!]
+}
+
+type Comment {
+    id: ID!
+    content: String!
+    author: User!
+    article: Article!
+}
+
+type Vote {
+    id: ID!
+    article: Article!
+    user: User!
+}
+
+type AuthPayload {
+    token: String
+    user: User
+}
+
+type Mutation {
+    signup(email: String!, password: String!, name: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    postArticle(title: String!, content: String, author: UserInput!): Article!
+    updateArticle(id: ID!, title: String, content: String): Article
+    deleteArticle(id: ID!): Article
+    postComment(content: String!, author: UserInput, article: ArticleInput): Comment!
+    updateComment(id: ID!, content: String): Comment
+    deleteComment(id: ID!): Comment
+    addVote(article: ArticleInput!, user: UserInput!): Vote!
+    deleteVote(id: ID!): Vote
+}
+
+input UserInput {
+    email: String!
+}
+
+input ArticleInput {
+    id: ID!
+}
