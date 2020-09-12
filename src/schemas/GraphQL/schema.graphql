@@ -1,0 +1,118 @@
+type Query {
+    info: String
+    articles(filter: String, skip: Int, take: Int, orderBy: ArticleOrderByInput): PaginatedArticles!
+    article(id: Int!): Article
+    users(filter: String, skip: Int, take: Int, orderBy: UserOrderByInput): PaginatedUsers!
+    user(id: Int!): User
+    comments(filter: String, skip: Int, take: Int, orderBy: CommentOrderByInput): PaginatedComments!
+    comment(id: Int!): Comment
+    votes(filter: VoteFilter, skip: Int, take: Int, orderBy: VoteOrderByInput): PaginatedVotes!
+    vote(id: Int!): Vote
+}
+
+type PaginatedArticles {
+    articles: [Article!]!
+    count: Int!
+}
+
+type PaginatedUsers {
+    users: [User!]!
+    count: Int!
+}
+
+type PaginatedComments {
+    comments: [Comment!]!
+    count: Int!
+}
+
+type PaginatedVotes {
+    votes: [Vote!]!
+    count: Int!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    articles: [Article]!
+    comments: [Comment]!
+}
+
+type Article {
+    id: ID!
+    title: String!
+    content: String
+    author: User
+    comments: [Comment!]
+    votes: [Vote!]
+}
+
+type Comment {
+    id: ID!
+    content: String!
+    author: User!
+    article: Article!
+}
+
+type Vote {
+    id: ID!
+    article: Article!
+    user: User!
+}
+
+type AuthPayload {
+    token: String
+    user: User
+}
+
+type Mutation {
+    signup(email: String!, password: String!, name: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    postArticle(title: String!, content: String, author: UserInput!): Article!
+    updateArticle(id: ID!, title: String, content: String): Article
+    deleteArticle(id: ID!): Article
+    postComment(content: String!, author: UserInput, article: ArticleInput): Comment!
+    updateComment(id: ID!, content: String): Comment
+    deleteComment(id: ID!): Comment
+    addVote(article: ArticleInput!, user: UserInput!): Vote!
+    deleteVote(id: ID!): Vote
+}
+
+input UserInput {
+    email: String!
+}
+
+input ArticleInput {
+    id: ID!
+}
+
+input ArticleOrderByInput {
+    title: Sort
+    createdAt: Sort
+}
+
+input UserOrderByInput {
+    name: Sort
+    email: Sort
+    createdAt: Sort
+}
+
+input CommentOrderByInput {
+    content: Sort
+    createdAt: Sort
+}
+
+input VoteOrderByInput {
+    createdAt: Sort
+}
+
+enum Sort {
+    asc
+    desc
+}
+
+input VoteFilter {
+    voteId: ID
+    articleId: ID
+    userId: ID
+}
