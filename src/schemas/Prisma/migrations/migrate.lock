@@ -1,3 +1,4 @@
 # Prisma Migrate lockfile v1
 
 20200911171055-intial-migration
+20200912113638-add-creation-date

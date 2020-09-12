@@ -1,5 +1,6 @@
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { getUserId } from '../utils/utils';
 
 const APP_SECRET = process.env.APP_SECRET ?? 'GraphQL-is-aw3some';
 
@@ -38,16 +39,14 @@ const login = async (parent, args, context) => {
 };
 
 const postArticle = async (parent, args, context) => {
-  const user = await context.prisma.user.findOne({
-    where: { email: args.author.email },
-  });
+  const userId = getUserId(context);
 
   return await context.prisma.article.create({
     data: {
       title: args.title,
       content: args.content,
       author: {
-        connect: { id: user.id },
+        connect: { id: userId },
       },
     },
     include: {
@@ -56,31 +55,32 @@ const postArticle = async (parent, args, context) => {
   });
 };
 
-const updateArticle = async (parent, args, context) =>
-  await context.prisma.article.update({
+const updateArticle = async (parent, args, context) => {
+  getUserId(context);
+  return await context.prisma.article.update({
     where: { id: +args.id },
     data: {
       content: args.content,
       title: args.title,
     },
   });
+};
 
-const deleteArticle = async (parent, args, context) =>
-  await context.prisma.article.delete({
+const deleteArticle = async (parent, args, context) => {
+  getUserId(context);
+  return await context.prisma.article.delete({
     where: { id: +args.id },
   });
+};
 
 const postComment = async (parent, args, context) => {
-  const user = await context.prisma.user.findOne({
-    where: { email: args.author.email },
-    select: { id: true },
-  });
+  const userId = getUserId(context);
   return await context.prisma.comment.create({
     data: {
       content: args.content,
       author: {
         connect: {
-          id: user.id,
+          id: userId,
         },
       },
       article: {
@@ -94,34 +94,30 @@ const postComment = async (parent, args, context) => {
   });
 };
 
-const updateComment = async (parent, args, context) =>
-  await context.prisma.comment.update({
+const updateComment = async (parent, args, context) => {
+  getUserId(context);
+  return await context.prisma.comment.update({
     where: { id: +args.id },
     data: {
       content: args.content,
     },
   });
+};
 
-const deleteComment = async (parent, args, context) =>
-  await context.prisma.comment.delete({
+const deleteComment = async (parent, args, context) => {
+  getUserId(context);
+  return await context.prisma.comment.delete({
     where: { id: +args.id },
   });
+};
 
 const addVote = async (parent, args, context) => {
-  const user = await context.prisma.user.findOne({
-    where: { email: args.user.email },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-    },
-  });
-
+  const userId = getUserId(context);
   return await context.prisma.vote.create({
     data: {
       user: {
         connect: {
-          id: user.id,
+          id: userId,
         },
       },
       article: {
@@ -137,12 +133,14 @@ const addVote = async (parent, args, context) => {
   });
 };
 
-const deleteVote = async (parent, args, context) =>
-  await context.prisma.vote.delete({
+const deleteVote = async (parent, args, context) => {
+  getUserId(context);
+  return await context.prisma.vote.delete({
     where: {
       id: +args.id,
     },
   });
+};
 
 const Mutation = {
   signup,
