@@ -1,6 +1,33 @@
 type Query {
     info: String
+    articles(filter: String, skip: Int, take: Int, orderBy: ArticleOrderByInput): PaginatedArticles!
     article(id: Int!): Article
+    users(filter: String, skip: Int, take: Int, orderBy: UserOrderByInput): PaginatedUsers!
+    user(id: Int!): User
+    comments(filter: String, skip: Int, take: Int, orderBy: CommentOrderByInput): PaginatedComments!
+    comment(id: Int!): Comment
+    votes(filter: VoteFilter, skip: Int, take: Int, orderBy: VoteOrderByInput): PaginatedVotes!
+    vote(id: Int!): Vote
+}
+
+type PaginatedArticles {
+    articles: [Article!]!
+    count: Int!
+}
+
+type PaginatedUsers {
+    users: [User!]!
+    count: Int!
+}
+
+type PaginatedComments {
+    comments: [Comment!]!
+    count: Int!
+}
+
+type PaginatedVotes {
+    votes: [Vote!]!
+    count: Int!
 }
 
 type User {
@@ -57,4 +84,35 @@ input UserInput {
 
 input ArticleInput {
     id: ID!
+}
+
+input ArticleOrderByInput {
+    title: Sort
+    createdAt: Sort
+}
+
+input UserOrderByInput {
+    name: Sort
+    email: Sort
+    createdAt: Sort
+}
+
+input CommentOrderByInput {
+    content: Sort
+    createdAt: Sort
+}
+
+input VoteOrderByInput {
+    createdAt: Sort
+}
+
+enum Sort {
+    asc
+    desc
+}
+
+input VoteFilter {
+    voteId: ID
+    articleId: ID
+    userId: ID
 }
